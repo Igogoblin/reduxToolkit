@@ -14,6 +14,14 @@ export const getPosts = createAsyncThunk(
   }
 );
 
+export const deletePostById = createAsyncThunk(
+  "posts/removePostById",
+  async (id, { rejectWithValue, dispatch }) => {
+    await axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`);
+    dispatch(deletePost(id));
+  }
+);
+
 export const postSlice = createSlice({
   name: "posts",
   initialState,
@@ -21,13 +29,19 @@ export const postSlice = createSlice({
     setPosts: (state, action) => {
       state.posts = action.payload;
     },
+    deletePost: (state, action) => {
+      state.posts = state.posts.filter((post) => post.id !== action.payload);
+    },
   },
   extraReducers: {
     [getPosts.fulfilled]: () => console.log("fullfilled"),
     [getPosts.pending]: () => console.log("pending"),
     [getPosts.rejected]: () => console.log("rejected"),
+    [deletePostById.fulfilled]: () => console.log("deletePostById: fullfilled"),
+    [deletePostById.pending]: () => console.log(" deletePostById: pending"),
+    [deletePostById.rejected]: () => console.log(" deletePostById: rejected"),
   },
 });
 
-export const { setPosts } = postSlice.actions;
+export const { setPosts, deletePost } = postSlice.actions;
 export default postSlice.reducer;
